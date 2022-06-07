@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import random
 from .models import Article
 
@@ -13,7 +13,7 @@ def dinner(request, name):
     menus = [{"name": '족발', "price": 30000}, {"name": '햄버거', "price": 5000}, {
         "name": '치킨', "price": 20000}, {"name": '초밥', "price": 15000}]
     pick = random.choice(menus)  # 랜덤으로 딕셔너리 목록을 골라줌
-    articles = Article.objects.all()
+    articles = Article.objects.order_by('-pk')
     context = {
         'pick': pick,
         'name': name,
@@ -29,8 +29,9 @@ def review(request):
 
 def create_review(request):
     content = request.POST.get('content')
+    title = request.POST.get('title')
+    article = Article(title=title, content=content)
+    article.save()
     print(request.POST)
-    context = {
-        'content': content,
-    }
-    return render(request, 'review_result.html', context)
+
+    return redirect('/articles/dinner/무언가/')
